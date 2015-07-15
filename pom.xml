@@ -198,10 +198,6 @@
                   <classpathScope>test</classpathScope>
                   <cleanupDaemonThreads>false</cleanupDaemonThreads>
                   <daemonThreadJoinTimeout>1000</daemonThreadJoinTimeout>
-                  <systemPropertyVariables>
-                    <nodyn.binary>./bin/nodyn</nodyn.binary>
-                    <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
-                  </systemPropertyVariables>
                 </configuration>
               </execution>
             </executions>
