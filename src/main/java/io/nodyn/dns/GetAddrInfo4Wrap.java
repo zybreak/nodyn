@@ -36,27 +36,24 @@ public class GetAddrInfo4Wrap extends AbstractQueryWrap {
     @Override
     public void start() {
         if (this.name.equals("localhost")) {
-            process.getEventLoop().getEventLoopGroup().submit(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        boolean found = false;
-                        InetAddress[] addrs = InetAddress.getAllByName(name);
-                        for ( int i = 0 ; i < addrs.length ; ++i ) {
-                            if ( addrs[i] instanceof Inet4Address ) {
-                                emit("complete", CallbackResult.createSuccess(addrs[i]));
-                                found = true;
-                                break;
-                            }
-                        }
-                        if ( ! found ) {
-                            emit("complete", CallbackResult.createError(new UnknownHostException()));
-                        }
-                    } catch (UnknownHostException e) {
-                        emit("complete", CallbackResult.createError(e));
-                    }
-                }
-            });
+            process.getEventLoop().getEventLoopGroup().submit(() -> {
+				try {
+					boolean found = false;
+					InetAddress[] addrs = InetAddress.getAllByName(name);
+					for (InetAddress addr : addrs) {
+						if (addr instanceof Inet4Address) {
+							emit("complete", CallbackResult.createSuccess(addr));
+							found = true;
+							break;
+						}
+					}
+					if ( ! found ) {
+						emit("complete", CallbackResult.createError(new UnknownHostException()));
+					}
+				} catch (UnknownHostException e) {
+					emit("complete", CallbackResult.createError(e));
+				}
+			});
         } else {
             dnsClient().lookup4(this.name, this.<Inet4Address>handler());
         }

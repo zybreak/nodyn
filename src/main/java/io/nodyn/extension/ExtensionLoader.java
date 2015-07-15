@@ -1,7 +1,6 @@
 package io.nodyn.extension;
 
 import io.nodyn.runtime.NodynClassLoader;
-import org.dynjs.runtime.DynamicClassLoader;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -77,11 +76,11 @@ public class ExtensionLoader {
 
         Method[] methods = extClass.getMethods();
 
-        for (int i = 0; i < methods.length; ++i) {
-            if (methods[i].getName().equals("require")) {
-                if (Modifier.isStatic(methods[i].getModifiers())) {
-                    if (methods[i].getParameterTypes().length == 0) {
-                        return loadExtension(methods[i]);
+        for (Method method : methods) {
+            if (method.getName().equals("require")) {
+                if (Modifier.isStatic(method.getModifiers())) {
+                    if (method.getParameterTypes().length == 0) {
+                        return loadExtension(method);
                     }
                 }
             }
@@ -97,7 +96,7 @@ public class ExtensionLoader {
     private String readNodeExtension(InputStream in) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
-        String line = null;
+        String line;
 
         while ((line = reader.readLine()) != null) {
             line = line.trim();

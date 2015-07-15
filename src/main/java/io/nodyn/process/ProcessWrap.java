@@ -24,6 +24,7 @@ import jnr.posix.SpawnFileAction;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,7 +52,7 @@ public class ProcessWrap extends HandleWrap {
     }
 
     private static final class StdioConfig {
-        public static enum Type {
+        public enum Type {
             OPEN,
             CLOSE,
         }
@@ -71,9 +72,7 @@ public class ProcessWrap extends HandleWrap {
         POSIX posix = this.process.getPosix();
 
         List<String> argv = new ArrayList<>();
-        for (int i = 0; i < args.length; ++i) {
-            argv.add(args[i]);
-        }
+        Collections.addAll(argv, args);
 
         Collection<SpawnFileAction> fileActions = new ArrayList<>();
 
@@ -110,7 +109,7 @@ public class ProcessWrap extends HandleWrap {
     public int waitFor() throws InterruptedException {
         int[] status = new int[1];
         int flags = 0;
-        int result = this.process.getPosix().waitpid(this.pid, status, flags);
+        this.process.getPosix().waitpid(this.pid, status, flags);
         return ( status[0] & 0xFF00 ) >> 8;
     }
 }

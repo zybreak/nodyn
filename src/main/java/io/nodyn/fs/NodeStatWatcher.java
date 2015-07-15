@@ -1,13 +1,15 @@
 package io.nodyn.fs;
 
-import io.netty.channel.EventLoopGroup;
 import io.nodyn.CallbackResult;
 import io.nodyn.NodeProcess;
 import io.nodyn.handle.HandleWrap;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
@@ -63,11 +65,10 @@ public class NodeStatWatcher extends HandleWrap {
             try {
                 WatchKey key = watcher.take();
                 while (key != null && key.isValid()) {
-                    for (final WatchEvent event : key.pollEvents()) {
-                        if (watchedFile == null || watchedFile.getName().equals(event.context().toString())) {
-                            emit("change", CallbackResult.createSuccess(event.context().toString()));
-                        }
-                    }
+                    key.pollEvents()
+						.stream()
+						.filter(event -> watchedFile == null || watchedFile.getName().equals(event.context().toString()))
+						.forEach(event -> emit("change", CallbackResult.createSuccess(event.context().toString())));
                     key.reset();
                     key = watcher.take();
                 }

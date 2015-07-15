@@ -41,9 +41,9 @@ public final class OpenSSLKDF {
 
         while (curLen < totalLen) {
             prev = kdf_d(data, prev, 1);
-            for (int i = 0; i < prev.length; ++i) {
+            for (byte aPrev : prev) {
                 if (curLen < (kiv.length)) {
-                    kiv[curLen] = prev[i];
+                    kiv[curLen] = aPrev;
                     ++curLen;
                 }
             }
@@ -60,13 +60,8 @@ public final class OpenSSLKDF {
 
         byte[] bytes = new byte[prev.length + data.length];
 
-        for (int i = 0; i < prev.length; ++i) {
-            bytes[i] = prev[i];
-        }
-
-        for (int i = 0; i < data.length; ++i) {
-            bytes[prev.length + i] = data[i];
-        }
+        System.arraycopy(prev, 0, bytes, 0, prev.length);
+        System.arraycopy(data, 0, bytes, prev.length + 0, data.length);
 
         byte[] cur = bytes;
 
@@ -80,9 +75,7 @@ public final class OpenSSLKDF {
 
         byte[] out = new byte[16];
 
-        for (int i = 0; i < out.length; ++i) {
-            out[i] = cur[i];
-        }
+        System.arraycopy(cur, 0, out, 0, out.length);
 
         return out;
     }

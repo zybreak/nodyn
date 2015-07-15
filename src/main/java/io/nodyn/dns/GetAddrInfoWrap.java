@@ -39,8 +39,8 @@ public class GetAddrInfoWrap extends AbstractQueryWrap {
                 try {
                     boolean found = false;
                     InetAddress[] addrs = InetAddress.getAllByName(name);
-                    for ( int i = 0 ; i < addrs.length ; ++i ) {
-                        emit("complete", CallbackResult.createSuccess(addrs[i]));
+                    for (InetAddress addr : addrs) {
+                        emit("complete", CallbackResult.createSuccess(addr));
                         found = true;
                         break;
                     }

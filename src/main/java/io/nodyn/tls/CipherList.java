@@ -12,8 +12,8 @@ public class CipherList {
     private Set<Cipher> blacklisted = new HashSet<>();
 
     public CipherList(String[] supported, String spec) {
-        for (int i = 0; i < supported.length; ++i) {
-            this.supported.add(Cipher.getByTLSName(supported[i]));
+        for (String aSupported : supported) {
+            this.supported.add(Cipher.getByTLSName(aSupported));
         }
         init(spec);
     }

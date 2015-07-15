@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Bob McWhirter
@@ -24,7 +25,7 @@ public class Cipher {
     public static void loadCiphers() throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(io.nodyn.tls.Cipher.class.getClassLoader().getResourceAsStream("ciphers.txt")));
 
-        String line = null;
+        String line;
         while ((line = in.readLine()) != null) {
             processCipherLine(line);
         }
@@ -90,7 +91,7 @@ public class Cipher {
         }
     }
 
-    public static enum Protocol {
+    public enum Protocol {
         SSL,
         TLS
     }
@@ -130,137 +131,68 @@ public class Cipher {
         return CIPHERS_BY_TLSNAME.get( name.toUpperCase() );
     }
 
-    public static interface MatchFunction {
+    public interface MatchFunction {
         boolean matches(Cipher cipher);
     }
 
-    public static MatchFunction TRUE = new MatchFunction() {
-        public boolean matches(Cipher cipher) {
-            return true;
-        }
-    };
+    public static MatchFunction TRUE = cipher -> true;
 
-    public static MatchFunction FALSE = new MatchFunction() {
-        public boolean matches(Cipher cipher) {
-            return false;
-        }
-    };
+    public static MatchFunction FALSE = cipher -> false;
 
     public static MatchFunction AND(final MatchFunction left, final MatchFunction right) {
-        return new MatchFunction() {
-            public boolean matches(Cipher cipher) {
-                if (!left.matches(cipher)) {
-                    return false;
-                }
-
-                return right.matches(cipher);
-            }
-        };
+        return cipher -> left.matches(cipher) && right.matches(cipher);
     }
 
     public static MatchFunction OR(final MatchFunction left, final MatchFunction right) {
-        return new MatchFunction() {
-            public boolean matches(Cipher cipher) {
-                if (left.matches(cipher)) {
-                    return true;
-                }
-
-                return right.matches(cipher);
-            }
-        };
+        return cipher -> left.matches(cipher) || right.matches(cipher);
     }
 
     public static MatchFunction NOT(final MatchFunction f) {
-        return new MatchFunction() {
-            @Override
-            public boolean matches(Cipher cipher) {
-                return !f.matches(cipher);
-            }
-        };
+        return cipher -> !f.matches(cipher);
     }
 
 
     public static List<Cipher> get(MatchFunction f) {
-        List<Cipher> matched = new ArrayList<>();
-        for (Cipher each : CIPHERS) {
-            if (f.matches(each)) {
-                matched.add(each);
-            }
-        }
-        return matched;
+        return CIPHERS.stream().filter(f::matches).collect(Collectors.toList());
     }
 
     public static MatchFunction EXPORT(final int keySize) {
-        return AND(new MatchFunction() {
-            public boolean matches(Cipher cipher) {
-                return cipher.export;
-            }
-        }, new MatchFunction() {
-            public boolean matches(Cipher cipher) {
-                if (keySize < 0) {
-                    return true;
-                }
-
-                return keySize == cipher.keySize;
-            }
-        });
+        return AND(cipher -> cipher.export, cipher -> keySize < 0 || keySize == cipher.keySize);
     }
 
     public static MatchFunction KX(final String kx) {
-        return new MatchFunction() {
-            public boolean matches(Cipher cipher) {
-                return kx.equals(cipher.keyExchange);
-            }
-        };
+        return cipher -> kx.equals(cipher.keyExchange);
     }
 
     public static MatchFunction ENC(final String algo, final int keySize) {
-        return AND(new MatchFunction() {
-            public boolean matches(Cipher cipher) {
-                if ( algo == null ) {
-                    return cipher.encryption == null;
-                }
-                return algo.equals( cipher.encryption );
-            }
-        }, new MatchFunction() {
-            public boolean matches(Cipher cipher) {
-                if (keySize < 0) {
-                    return true;
-                }
-
-                return cipher.keySize == keySize;
-            }
-        });
+        return AND(cipher -> {
+			if ( algo == null ) {
+				return cipher.encryption == null;
+			}
+			return algo.equals( cipher.encryption );
+		}, cipher -> keySize < 0 || cipher.keySize == keySize);
     }
 
     public static MatchFunction MAC(final String algo) {
-        return new MatchFunction() {
-            public boolean matches(Cipher cipher) {
-                if ( algo == null ) {
-                    return cipher.mac == null;
-                }
-                return algo.equals( cipher.mac );
-            }
-        };
+        return cipher -> {
+			if ( algo == null ) {
+				return cipher.mac == null;
+			}
+			return algo.equals( cipher.mac );
+		};
     }
 
     public static MatchFunction AUTH(final String algo) {
-        return new MatchFunction() {
-            public boolean matches(Cipher cipher) {
-                if (algo == null) {
-                    return cipher.auth == null;
-                }
-                return algo.equals( cipher.auth );
-            }
-        };
+        return cipher -> {
+			if (algo == null) {
+				return cipher.auth == null;
+			}
+			return algo.equals( cipher.auth );
+		};
     }
 
     public static MatchFunction PROTOCOL(final String name, final String version) {
-        return new MatchFunction() {
-            public boolean matches(Cipher cipher) {
-                return cipher.protocol.equals( Protocol.valueOf( name ) ) && cipher.version.equals( version );
-            }
-        };
+        return cipher -> cipher.protocol.equals( Protocol.valueOf( name ) ) && cipher.version.equals( version );
     }
 
     public static MatchFunction DEFAULT = match("ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-DSS-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA256:DHE-RSA-AES256-SHA:DHE-DSS-AES256-SHA:DHE-RSA-CAMELLIA256-SHA:DHE-DSS-CAMELLIA256-SHA:ECDH-RSA-AES256-GCM-SHA384:ECDH-ECDSA-AES256-GCM-SHA384:ECDH-RSA-AES256-SHA384:ECDH-ECDSA-AES256-SHA384:ECDH-RSA-AES256-SHA:ECDH-ECDSA-AES256-SHA:AES256-GCM-SHA384:AES256-SHA256:AES256-SHA:CAMELLIA256-SHA:PSK-AES256-CBC-SHA:ECDHE-RSA-DES-CBC3-SHA:ECDHE-ECDSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:EDH-DSS-DES-CBC3-SHA:ECDH-RSA-DES-CBC3-SHA:ECDH-ECDSA-DES-CBC3-SHA:DES-CBC3-SHA:PSK-3DES-EDE-CBC-SHA:KRB5-DES-CBC3-SHA:KRB5-DES-CBC3-MD5:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:DHE-DSS-AES128-GCM-SHA256:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES128-SHA256:DHE-DSS-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA:DHE-RSA-SEED-SHA:DHE-DSS-SEED-SHA:DHE-RSA-CAMELLIA128-SHA:DHE-DSS-CAMELLIA128-SHA:ECDH-RSA-AES128-GCM-SHA256:ECDH-ECDSA-AES128-GCM-SHA256:ECDH-RSA-AES128-SHA256:ECDH-ECDSA-AES128-SHA256:ECDH-RSA-AES128-SHA:ECDH-ECDSA-AES128-SHA:AES128-GCM-SHA256:AES128-SHA256:AES128-SHA:SEED-SHA:CAMELLIA128-SHA:IDEA-CBC-SHA:PSK-AES128-CBC-SHA:KRB5-IDEA-CBC-SHA:KRB5-IDEA-CBC-MD5:ECDHE-RSA-RC4-SHA:ECDHE-ECDSA-RC4-SHA:ECDH-RSA-RC4-SHA:ECDH-ECDSA-RC4-SHA:RC4-SHA:RC4-MD5:PSK-RC4-SHA:KRB5-RC4-SHA:KRB5-RC4-MD5:EDH-RSA-DES-CBC-SHA:EDH-DSS-DES-CBC-SHA:DES-CBC-SHA:KRB5-DES-CBC-SHA:KRB5-DES-CBC-MD5:EXP-EDH-RSA-DES-CBC-SHA:EXP-EDH-DSS-DES-CBC-SHA:EXP-DES-CBC-SHA:EXP-RC2-CBC-MD5:EXP-KRB5-RC2-CBC-SHA:EXP-KRB5-DES-CBC-SHA:EXP-KRB5-RC2-CBC-MD5:EXP-KRB5-DES-CBC-MD5:EXP-RC4-MD5:EXP-KRB5-RC4-SHA:EXP-KRB5-RC4-MD5");
@@ -299,19 +231,11 @@ public class Cipher {
             names.add(tokens.nextToken());
         }
 
-        return new MatchFunction() {
-            public boolean matches(Cipher cipher) {
-                return names.contains(cipher.opensslName);
-            }
-        };
+        return cipher -> names.contains(cipher.opensslName);
     }
 
     private static MatchFunction matchName(final String name) {
-        return new MatchFunction() {
-            public boolean matches(Cipher cipher) {
-                return cipher.opensslName.equals( name );
-            }
-        };
+        return cipher -> cipher.opensslName.equals( name );
     }
 
 
@@ -353,18 +277,10 @@ public class Cipher {
                 break;
             case "eNULL":
             case "NULL":
-                fn = new MatchFunction() {
-                    public boolean matches(Cipher cipher) {
-                        return cipher.encryption == null;
-                    }
-                };
+                fn = cipher -> cipher.encryption == null;
                 break;
             case "aNULL":
-                fn = new MatchFunction() {
-                    public boolean matches(Cipher cipher) {
-                        return cipher.auth == null;
-                    }
-                };
+                fn = cipher -> cipher.auth == null;
                 break;
             case "kRSA":
                 fn = KX("RSA");
@@ -544,8 +460,7 @@ public class Cipher {
             return Collections.emptyList();
         }
 
-        List<Cipher> matched = get(fn);
-        return matched;
+        return get(fn);
     }
 
 

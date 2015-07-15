@@ -252,7 +252,7 @@ public class Buffer {
     }
 
     public static void writeFloatLE(ScriptObjectMirror obj, float value, int offset) {
-        int bits = Float.floatToIntBits((float) value);
+        int bits = Float.floatToIntBits(value);
         extract(obj).putInt(offset, Integer.reverseBytes(bits));
     }
 

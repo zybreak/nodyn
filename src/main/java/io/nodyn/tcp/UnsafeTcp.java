@@ -110,9 +110,7 @@ public class UnsafeTcp {
         FileDescriptor fileDesc = UnsafeFs.createFileDescriptor( fd );
 
         ctor.setAccessible(true);
-        SocketChannel socketChannel = (SocketChannel) ctor.newInstance(provider, fileDesc, null);
-
-        return socketChannel;
+        return (SocketChannel) ctor.newInstance(provider, fileDesc, null);
     }
 
     private static void dump(Object o) throws IllegalAccessException {
@@ -122,10 +120,12 @@ public class UnsafeTcp {
     private static void dump(String indent, Object o, Class cls) throws IllegalAccessException {
         System.err.println(indent + ">" + cls.getName());
         Field[] fields = cls.getDeclaredFields();
-        for (int i = 0; i < fields.length; ++i) {
-            fields[i].setAccessible(true);
-            Object v = fields[i].get(o);
-            System.err.println(indent + "  - " + fields[i].getName() + " = " + v + (v == null ? "" : " (" + v.getClass().getName() + ")"));
+        for (Field field : fields) {
+            field.setAccessible(true);
+            Object v = field.get(o);
+            System.err.println(indent + "  - " + field.getName() + " = " + v + (v == null ?
+                        "" :
+                        " (" + v.getClass().getName() + ")"));
         }
 
         if (cls.getSuperclass() != null) {

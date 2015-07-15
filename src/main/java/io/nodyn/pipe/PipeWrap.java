@@ -26,7 +26,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class PipeWrap extends StreamWrap {
 
-    private static enum Type {
+    private enum Type {
         INPUT,
         OUTPUT,
         DUPLEX,

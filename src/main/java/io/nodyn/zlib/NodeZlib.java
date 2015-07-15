@@ -76,18 +76,15 @@ public class NodeZlib extends HandleWrap {
     }
 
     public void write(final int flush, final byte[] chunk, final int inOffset, final int inLen, final ByteBuf buffer, final int outOffset, final int outLen) {
-        process.getEventLoop().submitBlockingTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    __write(flush, chunk, inOffset, inLen, buffer, outOffset, outLen);
-                } catch (Throwable t) {
-                    System.err.println("Got error " + t);
-                    t.printStackTrace();
-                    NodeZlib.this.emit("error", CallbackResult.createError(t));
-                }
-            }
-        });
+        process.getEventLoop().submitBlockingTask(() -> {
+			try {
+				__write(flush, chunk, inOffset, inLen, buffer, outOffset, outLen);
+			} catch (Throwable t) {
+				System.err.println("Got error " + t);
+				t.printStackTrace();
+				NodeZlib.this.emit("error", CallbackResult.createError(t));
+			}
+		});
     }
 
     public void writeSync(int flush, byte[] chunk, int inOffset, int inLen, ByteBuf buffer, int outOffset, int outLen) throws IOException, DataFormatException {

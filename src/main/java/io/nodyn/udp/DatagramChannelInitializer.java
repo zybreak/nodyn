@@ -3,7 +3,6 @@ package io.nodyn.udp;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
-import io.nodyn.netty.DebugHandler;
 import io.nodyn.netty.UnrefHandler;
 
 /**

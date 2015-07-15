@@ -19,7 +19,6 @@ package io.nodyn.dns;
 import io.nodyn.CallbackResult;
 import io.nodyn.NodeProcess;
 
-import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -37,28 +36,25 @@ public class GetAddrInfo6Wrap extends AbstractQueryWrap {
     @Override
     public void start() {
         if (this.name.equals("localhost")) {
-            process.getEventLoop().getEventLoopGroup().submit(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        boolean found = false;
-                        InetAddress[] addrs = InetAddress.getAllByName(name);
-                        for ( int i = 0 ; i < addrs.length ; ++i ) {
-                            if ( addrs[i] instanceof Inet6Address) {
-                                final CallbackResult success = CallbackResult.createSuccess(addrs[i]);
-                                emit("complete", success);
-                                found = true;
-                                break;
-                            }
-                        }
-                        if ( ! found ) {
-                            emit("complete", CallbackResult.createError(new UnknownHostException()));
-                        }
-                    } catch (UnknownHostException e) {
-                        emit("complete", CallbackResult.createError(e));
-                    }
-                }
-            });
+            process.getEventLoop().getEventLoopGroup().submit(() -> {
+				try {
+					boolean found = false;
+					InetAddress[] addrs = InetAddress.getAllByName(name);
+					for (InetAddress addr : addrs) {
+						if (addr instanceof Inet6Address) {
+							final CallbackResult success = CallbackResult.createSuccess(addr);
+							emit("complete", success);
+							found = true;
+							break;
+						}
+					}
+					if ( ! found ) {
+						emit("complete", CallbackResult.createError(new UnknownHostException()));
+					}
+				} catch (UnknownHostException e) {
+					emit("complete", CallbackResult.createError(e));
+				}
+			});
         } else {
             dnsClient().lookup6(this.name, this.<Inet6Address>handler());
         }

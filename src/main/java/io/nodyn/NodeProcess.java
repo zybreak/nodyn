@@ -58,12 +58,8 @@ public class NodeProcess extends EventSource {
         this.osName = props.getProperty("os.name").toLowerCase();
         this.osArch = props.getProperty("os.arch").toLowerCase();
 
-        this.immediateCheckHandle = new ImmediateCheckHandle(nodyn.getEventLoop(), new Runnable() {
-            @Override
-            public void run() {
-                emit("checkImmediate", CallbackResult.EMPTY_SUCCESS);
-            }
-        });
+        this.immediateCheckHandle = new ImmediateCheckHandle(nodyn.getEventLoop(),
+                    () -> emit("checkImmediate", CallbackResult.EMPTY_SUCCESS));
 
         this.posix = POSIXFactory.getPOSIX(new NodePosixHandler(), true);
 
@@ -160,8 +156,7 @@ public class NodeProcess extends EventSource {
         }
         File nodynBinary = new File(bin);
         nodynBinary = nodynBinary.getAbsoluteFile();
-        String path = nodynBinary.getAbsolutePath();
-        return path;
+        return nodynBinary.getAbsolutePath();
     }
 
     /**
@@ -186,23 +181,23 @@ public class NodeProcess extends EventSource {
     }
 
     public boolean isLinux() {
-        return osName.indexOf("linux") >= 0;
+        return osName.contains("linux");
     }
 
     public boolean isMac() {
-        return osName.indexOf("darwin") >= 0 || osName.indexOf("mac") >= 0;
+        return osName.contains("darwin") || osName.contains("mac");
     }
 
     public boolean isFreeBSD() {
-        return osName.indexOf("freebsd") >= 0;
+        return osName.contains("freebsd");
     }
 
     public boolean isSunos() {
-        return osName.indexOf("sunos") >= 0;
+        return osName.contains("sunos");
     }
 
     public boolean isWindows() {
-        return osName.indexOf("win") >= 0;
+        return osName.contains("win");
     }
 
     /**
@@ -223,15 +218,15 @@ public class NodeProcess extends EventSource {
     }
 
     public boolean isIa32() {
-        return osArch.indexOf("x86") >= 0 || osArch.indexOf("i386") >= 0;
+        return osArch.contains("x86") || osArch.contains("i386");
     }
 
     public boolean isX64() {
-        return osArch.indexOf("amd64") >= 0 || osArch.indexOf("x86_64") >= 0;
+        return (osArch.contains("amd64")) || (osArch.contains("x86_64"));
     }
 
     public boolean isArm() {
-        return osArch.indexOf("arm") >= 0;
+        return osArch.contains("arm");
     }
 
     public POSIX getPosix() {

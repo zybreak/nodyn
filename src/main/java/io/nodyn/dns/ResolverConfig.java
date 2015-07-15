@@ -52,16 +52,16 @@ public class ResolverConfig {
         if (this.servers == null) {
             String OS = System.getProperty("os.name");
             String vendor = System.getProperty("java.vendor");
-            if (OS.indexOf("Windows") != -1) {
-                if (OS.indexOf("95") != -1 ||
-                        OS.indexOf("98") != -1 ||
-                        OS.indexOf("ME") != -1)
+            if (OS.contains("Windows")) {
+                if (OS.contains("95") ||
+                            OS.contains("98") ||
+                            OS.contains("ME"))
                     find95();
                 else
                     findNT();
-            } else if (OS.indexOf("NetWare") != -1) {
+            } else if (OS.contains("NetWare")) {
                 findNetware();
-            } else if (vendor.indexOf("Android") != -1) {
+            } else if (vendor.contains("Android")) {
                 findAndroid();
             } else {
                 findUnix();
@@ -155,9 +155,9 @@ public class ResolverConfig {
             return false;
 
         if (lserver_tmp.size() > 0) {
-            Iterator it = lserver_tmp.iterator();
-            while (it.hasNext())
-                addServer((String) it.next(), lserver);
+            for (Object aLserver_tmp : lserver_tmp) {
+                addServer((String) aLserver_tmp, lserver);
+            }
         }
 
         configureFromLists(lserver);
@@ -171,7 +171,7 @@ public class ResolverConfig {
      */
     private void
     findResolvConf(String file) {
-        InputStream in = null;
+        InputStream in;
         try {
             in = new FileInputStream(file);
         } catch (FileNotFoundException e) {
@@ -243,7 +243,7 @@ public class ResolverConfig {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         try {
             List lserver = new ArrayList();
-            String line = null;
+            String line;
             boolean readingServers = false;
             boolean readingSearches = false;
             while ((line = br.readLine()) != null) {
@@ -254,21 +254,21 @@ public class ResolverConfig {
                     continue;
                 }
                 String s = st.nextToken();
-                if (line.indexOf(":") != -1) {
+                if (line.contains(":")) {
                     readingServers = false;
                     readingSearches = false;
                 }
 
-                if (line.indexOf(host_name) != -1) {
+                if (line.contains(host_name)) {
                     while (st.hasMoreTokens()) {
                         s = st.nextToken();
                     }
-                } else if (line.indexOf(primary_dns_suffix) != -1) {
+                } else if (line.contains(primary_dns_suffix)) {
                     while (st.hasMoreTokens()) {
                         s = st.nextToken();
                     }
                     readingSearches = true;
-                } else if (readingSearches || line.indexOf(dns_suffix) != -1) {
+                } else if (readingSearches || line.contains(dns_suffix)) {
                     while (st.hasMoreTokens()) {
                         s = st.nextToken();
                     }
@@ -276,7 +276,7 @@ public class ResolverConfig {
                         continue;
                     }
                     readingSearches = true;
-                } else if (readingServers || line.indexOf(dns_servers) != -1) {
+                } else if (readingServers || line.contains(dns_servers)) {
                     while (st.hasMoreTokens()) {
                         s = st.nextToken();
                     }
@@ -297,7 +297,7 @@ public class ResolverConfig {
     findWin(InputStream in) {
         String property = "org.xbill.DNS.windows.parse.buffer";
         final int defaultBufSize = 8 * 1024;
-        int bufSize = Integer.getInteger(property, defaultBufSize).intValue();
+        int bufSize = Integer.getInteger(property, defaultBufSize);
         BufferedInputStream b = new BufferedInputStream(in, bufSize);
         b.mark(bufSize);
         findWin(b, null);
@@ -362,16 +362,15 @@ public class ResolverConfig {
             Class SystemProperties =
                     Class.forName("android.os.SystemProperties");
             Method method =
-                    SystemProperties.getMethod("get",
-                            new Class[]{String.class});
+                    SystemProperties.getMethod("get", String.class);
             final String[] netdns = new String[]{"net.dns1", "net.dns2",
                     "net.dns3", "net.dns4"};
-            for (int i = 0; i < netdns.length; i++) {
-                Object[] args = new Object[]{netdns[i]};
+            for (String netdn : netdns) {
+                Object[] args = new Object[] { netdn };
                 String v = (String) method.invoke(null, args);
                 if (v != null &&
-                        (v.matches(re1) || v.matches(re2)) &&
-                        !lserver.contains(v))
+                            (v.matches(re1) || v.matches(re2)) &&
+                            !lserver.contains(v))
                     lserver.add(v);
             }
         } catch (Exception e) {

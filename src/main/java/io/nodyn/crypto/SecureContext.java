@@ -118,7 +118,7 @@ public class SecureContext {
         } else if (object instanceof PEMKeyPair) {
             this.privateKey = converter.getKeyPair((PEMKeyPair) object).getPrivate();
         } else if (object instanceof PEMEncryptedKeyPair) {
-            char[] passphraseChars = null;
+            char[] passphraseChars;
             if (passphrase == null) {
                 passphraseChars = new char[]{};
             } else {

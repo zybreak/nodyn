@@ -29,13 +29,10 @@ public class Blocking {
 
     public void submit(final Runnable action) {
         final RefHandle handle = this.eventLoop.newHandle( "blocking" );
-        this.eventLoop.submitBlockingTask(new Runnable() {
-            @Override
-            public void run() {
-                action.run();
-                handle.unref();
-            }
-        });
+        this.eventLoop.submitBlockingTask(() -> {
+			action.run();
+			handle.unref();
+		});
     }
 
     public void unblock(final Runnable action) {

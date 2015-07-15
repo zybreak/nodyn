@@ -44,8 +44,7 @@ public class NashornRuntime extends Nodyn {
 
     private final NashornScriptEngine engine;
     private final ScriptContext global;
-    private Program nativeRequire;
-    
+
     private static final String NATIVE_REQUIRE = "nodyn/_native_require.js";
 
     public NashornRuntime(NodynConfig config) {
@@ -60,7 +59,7 @@ public class NashornRuntime extends Nodyn {
         global = engine.getContext();
 
         try {
-            nativeRequire = compileNative(NATIVE_REQUIRE);
+            Program nativeRequire = compileNative(NATIVE_REQUIRE);
             nativeRequire.execute(global);
         } catch (ScriptException ex) {
             Logger.getLogger(NashornRuntime.class.getName()).log(Level.SEVERE, "Failed to load " + NATIVE_REQUIRE, ex);
@@ -83,8 +82,7 @@ public class NashornRuntime extends Nodyn {
     public Program compile(String source, String fileName, boolean displayErrors) throws Throwable {
         // TODO: do something with the displayErrors parameter
         try {
-            Program program = new NashornProgram(engine.compile(source), fileName);
-            return program;
+            return new NashornProgram(engine.compile(source), fileName);
         } catch (ScriptException ex) {
             Logger.getLogger(NashornRuntime.class.getName()).log(Level.SEVERE, "Cannot compile script " + fileName, ex);
             handleThrowable(ex);
@@ -180,7 +178,7 @@ public class NashornRuntime extends Nodyn {
 
     class NodynJSObject extends AbstractJSObject {
 
-        HashMap store = new HashMap();
+        HashMap<String, Object> store = new HashMap<>();
 
         @Override
         public void setMember(String name, Object value) {

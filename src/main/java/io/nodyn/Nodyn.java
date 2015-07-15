@@ -151,22 +151,19 @@ public abstract class Nodyn {
     }
 
     private void start(final Callback callback) {
-        this.eventLoop.submitUserTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Nodyn.this.completionHandler.process = initialize();
-                    if (callback != null) {
-                        callback.call(CallbackResult.createSuccess());
-                    }
-                } catch (Throwable t) {
-                    Nodyn.this.completionHandler.error = t;
-                    if (callback != null) {
-                        callback.call(CallbackResult.createError(t));
-                    }
-                }
-            }
-        }, "init");
+        this.eventLoop.submitUserTask(() -> {
+			try {
+				Nodyn.this.completionHandler.process = initialize();
+				if (callback != null) {
+					callback.call(CallbackResult.createSuccess());
+				}
+			} catch (Throwable t) {
+				Nodyn.this.completionHandler.error = t;
+				if (callback != null) {
+					callback.call(CallbackResult.createError(t));
+				}
+			}
+		}, "init");
     }
 
     private final EventLoop eventLoop;

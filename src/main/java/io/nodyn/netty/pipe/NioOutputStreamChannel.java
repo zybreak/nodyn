@@ -36,8 +36,7 @@ public class NioOutputStreamChannel extends AbstractChannel {
     private boolean open;
 
     public static NioOutputStreamChannel create(NodeProcess process, OutputStream out) throws IOException {
-        NioOutputStreamChannel s = new NioOutputStreamChannel(process, out);
-        return s;
+        return new NioOutputStreamChannel(process, out);
     }
 
     protected NioOutputStreamChannel(NodeProcess process, OutputStream out) {
@@ -97,27 +96,25 @@ public class NioOutputStreamChannel extends AbstractChannel {
 
     @Override
     protected void doWrite(final ChannelOutboundBuffer in) throws Exception {
-        this.process.getEventLoop().submitBlockingTask(new Runnable() {
-            public void run() {
-                ByteBuffer[] buffers = in.nioBuffers();
-                for (int i = 0; i < buffers.length; ++i) {
-                    ByteBuffer each = buffers[i];
-                    
-                    // TODO: we should not have to make this check, the array should
-                    // be trimmed appropriately elsewhere
-                    if (each != null) {
-                        int amount = each.limit() - each.position();
-                        byte[] bytes = new byte[amount];
-                        each.get(bytes);
-                        try {
-                            NioOutputStreamChannel.this.out.write(bytes);
-                        } catch (IOException e) {
-                            NioOutputStreamChannel.this.process.getNodyn().handleThrowable(e);
-                        }
-                    } else { break; }
+        this.process.getEventLoop().submitBlockingTask(() -> {
+			ByteBuffer[] buffers = in.nioBuffers();
+            for (ByteBuffer each : buffers) {
+                // TODO: we should not have to make this check, the array should
+                // be trimmed appropriately elsewhere
+                if (each != null) {
+                    int amount = each.limit() - each.position();
+                    byte[] bytes = new byte[amount];
+                    each.get(bytes);
+                    try {
+                        NioOutputStreamChannel.this.out.write(bytes);
+                    } catch (IOException e) {
+                        NioOutputStreamChannel.this.process.getNodyn().handleThrowable(e);
+                    }
+                } else {
+                    break;
                 }
             }
-        });
+		});
     }
 
     @Override

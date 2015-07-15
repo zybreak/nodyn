@@ -1,6 +1,5 @@
 package io.nodyn.crypto;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 import io.nodyn.buffer.Buffer;
@@ -20,7 +19,6 @@ import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.security.PublicKey;
-import java.util.Iterator;
 
 /**
  * @author Bob McWhirter
@@ -48,7 +46,7 @@ public class Verify {
         String objectStr = new String(Buffer.extractByteArray(objectBuf), Charset.forName("UTF-8"));
         Reader objectReader = new StringReader(objectStr);
         PEMParser parser = new PEMParser(objectReader);
-        PublicKey publicKey = null;
+        PublicKey publicKey;
         try {
             Object object = parser.readObject();
 
@@ -77,10 +75,7 @@ public class Verify {
 
             SignerInformationVerifier verifier = new JcaSimpleSignerInfoVerifierBuilder().build(publicKey);
 
-            Iterator<SignerInformation> signerIter = signedData.getSignerInfos().getSigners().iterator();
-
-            while (signerIter.hasNext()) {
-                SignerInformation each = signerIter.next();
+            for (SignerInformation each : (Iterable<SignerInformation>) signedData.getSignerInfos().getSigners()) {
                 if (each.verify(verifier)) {
                     return true;
                 }

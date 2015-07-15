@@ -16,8 +16,6 @@
 
 package io.nodyn.loop;
 
-import io.netty.channel.EventLoopGroup;
-
 import java.util.concurrent.Future;
 
 /**

@@ -41,7 +41,6 @@ public class DynJSProgram implements Program {
     public Object execute(Object context) {
         DynJSBuiltin dynjsBuiltin = (DynJSBuiltin) ((JSObject)context).get(null, "dynjs");
         DynJS runtime = dynjsBuiltin.getRuntime();
-        Object result = runtime.newRunner().withSource( this.script ).withDebugger( this.debugger ).execute();
-        return result;
+        return runtime.newRunner().withSource( this.script ).withDebugger( this.debugger ).execute();
     }
 }

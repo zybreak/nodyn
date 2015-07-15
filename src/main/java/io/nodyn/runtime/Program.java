@@ -28,5 +28,5 @@ public interface Program {
      * @param context the Javascript execution context
      * @return the result of program execution
      */
-    public Object execute(Object context);
+    Object execute(Object context);
 }

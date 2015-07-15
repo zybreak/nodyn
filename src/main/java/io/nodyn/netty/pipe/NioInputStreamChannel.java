@@ -51,27 +51,23 @@ public class NioInputStreamChannel extends AbstractNioStreamChannel {
     }
 
     protected void startPump() {
-        this.process.getEventLoop().submitBlockingTask(new Runnable() {
-
-            @Override
-            public void run() {
-                byte[] buf = new byte[1024];
-                int numRead = 0;
-                try {
-                    while ((numRead = NioInputStreamChannel.this.in.read(buf)) >= 0) {
-                        NioInputStreamChannel.this.pipe.sink().write(ByteBuffer.wrap(buf, 0, numRead));
-                    }
-                    NioInputStreamChannel.this.pipe.sink().close();
-                } catch (IOException e) {
-                    NioInputStreamChannel.this.process.getNodyn().handleThrowable(e);
-                    try {
-                        NioInputStreamChannel.this.pipe.sink().close();
-                    } catch (IOException e1) {
-                        NioInputStreamChannel.this.process.getNodyn().handleThrowable(e);
-                    }
-                }
-            }
-        });
+        this.process.getEventLoop().submitBlockingTask(() -> {
+			byte[] buf = new byte[1024];
+			int numRead = 0;
+			try {
+				while ((numRead = NioInputStreamChannel.this.in.read(buf)) >= 0) {
+					NioInputStreamChannel.this.pipe.sink().write(ByteBuffer.wrap(buf, 0, numRead));
+				}
+				NioInputStreamChannel.this.pipe.sink().close();
+			} catch (IOException e) {
+				NioInputStreamChannel.this.process.getNodyn().handleThrowable(e);
+				try {
+					NioInputStreamChannel.this.pipe.sink().close();
+				} catch (IOException e1) {
+					NioInputStreamChannel.this.process.getNodyn().handleThrowable(e);
+				}
+			}
+		});
     }
 
     @Override

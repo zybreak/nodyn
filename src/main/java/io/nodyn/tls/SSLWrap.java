@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import io.nodyn.CallbackResult;
 import io.nodyn.NodeProcess;
 import io.nodyn.async.AsyncWrap;
@@ -59,19 +58,16 @@ public class SSLWrap extends AsyncWrap {
 
         SslHandler sslHandler = new SslHandler(this.sslEngine);
         Future<Channel> handleshake = sslHandler.handshakeFuture();
-        handleshake.addListener(new GenericFutureListener<Future<? super Channel>>() {
-            @Override
-            public void operationComplete(Future<? super Channel> future) throws Exception {
-                if (future.isSuccess()) {
-                    emit("handshakedone", CallbackResult.EMPTY_SUCCESS);
-                    if (isServer) {
-                        emit("newsession", CallbackResult.createSuccess("foo", "bar"));
-                    }
-                } else {
-                    emit("handshakedone", CallbackResult.EMPTY_SUCCESS);
-                }
-            }
-        });
+        handleshake.addListener(future -> {
+			if (future.isSuccess()) {
+				emit("handshakedone", CallbackResult.EMPTY_SUCCESS);
+				if (isServer) {
+					emit("newsession", CallbackResult.createSuccess("foo", "bar"));
+				}
+			} else {
+				emit("handshakedone", CallbackResult.EMPTY_SUCCESS);
+			}
+		});
 
         if (stream.getPipeline().get("debug") != null) {
             stream.getPipeline().addAfter("debug", "ssl", sslHandler);

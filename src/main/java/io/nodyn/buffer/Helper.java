@@ -28,8 +28,7 @@ public class Helper {
     }
 
     public static byte[] bytes(String string, String enc) throws UnsupportedEncodingException {
-        byte[] bytes = string.getBytes(enc);
-        return bytes;
+        return string.getBytes(enc);
     }
 
     public static char[] characters(String string) throws UnsupportedEncodingException {

@@ -20,12 +20,10 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.nodyn.NodeProcess;
-import io.nodyn.netty.DebugHandler;
 import io.nodyn.netty.EOFEventHandler;
 import io.nodyn.netty.UnrefHandler;
 import io.nodyn.stream.StreamWrap;
@@ -33,7 +31,6 @@ import io.nodyn.stream.StreamWrap;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Bob McWhirter
@@ -81,12 +78,9 @@ public class TCPWrap extends StreamWrap {
             }
         });
         this.channelFuture = bootstrap.bind(this.addr, this.port);
-        this.channelFuture.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                // TODO callback error
-            }
-        });
+        this.channelFuture.addListener(future -> {
+			// TODO callback error
+		});
 
         ref();
     }
@@ -115,12 +109,9 @@ public class TCPWrap extends StreamWrap {
         });
 
         this.channelFuture = bootstrap.connect(addr, port);
-        this.channelFuture.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                // TODO callback error
-            }
-        });
+        this.channelFuture.addListener(future -> {
+			// TODO callback error
+		});
         ref();
     }
 

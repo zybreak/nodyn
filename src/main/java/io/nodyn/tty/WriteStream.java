@@ -33,7 +33,7 @@ import java.io.OutputStream;
 public class WriteStream {
 
     public static ChannelFuture create(NodeProcess process, int fd, StreamWrap handle) throws IOException {
-        OutputStream out = null;
+        OutputStream out;
         if ( fd == 1 ) {
             out = System.out;
         } else if ( fd == 2 ) {

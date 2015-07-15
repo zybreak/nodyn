@@ -1,9 +1,7 @@
 package io.nodyn.udp;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.bootstrap.ChannelFactory;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
@@ -37,7 +35,7 @@ public class UDPWrap extends HandleWrap {
 
     public Object bind(final String address, final int port, int flags, final Family family) throws InterruptedException {
         try {
-            InetAddress addr = null;
+            InetAddress addr;
             if (family == Family.IPv6) {
                 addr = Inet6Address.getByName( address );
             } else {
@@ -47,12 +45,8 @@ public class UDPWrap extends HandleWrap {
             this.localAddress = new InetSocketAddress( addr, port );
 
             bootstrap.option(ChannelOption.SO_REUSEADDR, flags != 0);
-            bootstrap.channelFactory( new ChannelFactory<Channel>() {
-                @Override
-                public Channel newChannel() {
-                    return new NioDatagramChannel( family == Family.IPv4 ? InternetProtocolFamily.IPv4 : InternetProtocolFamily.IPv6 );
-                }
-            });
+            bootstrap.channelFactory(
+                        () -> new NioDatagramChannel( family == Family.IPv4 ? InternetProtocolFamily.IPv4 : InternetProtocolFamily.IPv6 ));
             this.channelFuture = bootstrap.localAddress(localAddress).bind();
             this.channelFuture.sync();
         } catch (Exception e) {

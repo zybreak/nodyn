@@ -36,26 +36,20 @@ public class AsyncWrap extends EventSource {
     }
 
     public void makeCallback(final int index) {
-        this.process.getEventLoop().submitUserTask( new Runnable() {
-            @Override
-            public void run() {
-                emit("makeCallbackByIndex", CallbackResult.createSuccess( index ) );
-            }
-        }, "make-callback-for-" + getClass().getSimpleName() );
+        this.process.getEventLoop().submitUserTask(
+                    () -> emit("makeCallbackByIndex", CallbackResult.createSuccess( index ) ),
+                    "make-callback-for-" + getClass().getSimpleName() );
 
     }
 
     public Object emit(final String event, final CallbackResult result) {
-        this.process.getEventLoop().submitUserTask( new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    AsyncWrap.super.emit(event, result);
-                } catch (Throwable t) {
-                    AsyncWrap.this.getProcess().getNodyn().handleThrowable(t);
-                }
-            }
-        }, "emit-for-" + getClass().getSimpleName() );
+        this.process.getEventLoop().submitUserTask(() -> {
+			try {
+				AsyncWrap.super.emit(event, result);
+			} catch (Throwable t) {
+				AsyncWrap.this.getProcess().getNodyn().handleThrowable(t);
+			}
+		}, "emit-for-" + getClass().getSimpleName() );
         return null;
     }
 }

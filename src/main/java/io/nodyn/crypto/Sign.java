@@ -1,6 +1,5 @@
 package io.nodyn.crypto;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 import io.nodyn.buffer.Buffer;
@@ -52,14 +51,14 @@ public class Sign {
         Object object = parser.readObject();
 
         JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
-        PrivateKey privateKey = null;
+        PrivateKey privateKey;
 
         if (object instanceof PrivateKeyInfo) {
             privateKey = converter.getPrivateKey((PrivateKeyInfo) object);
         } else if (object instanceof PEMKeyPair) {
             privateKey = converter.getKeyPair((PEMKeyPair) object).getPrivate();
         } else if (object instanceof PEMEncryptedKeyPair) {
-            char[] passphraseChars = null;
+            char[] passphraseChars;
             if ( passphrase == null ) {
                 passphraseChars = new char[]{};
             } else {

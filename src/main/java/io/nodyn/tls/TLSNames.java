@@ -23,7 +23,7 @@ public class TLSNames {
 
     private static void loadTlsNames() throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(io.nodyn.tls.Cipher.class.getClassLoader().getResourceAsStream("tls-names.txt")));
-        String line = null;
+        String line;
         while ((line = in.readLine()) != null) {
             processLine(line);
         }

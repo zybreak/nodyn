@@ -53,9 +53,7 @@ public class EventLoop implements RefCounted {
         this.controlLifecycle = controlLifecycle;
 
         CountDownLatch latch = new CountDownLatch(1);
-        this.eventLoopGroup.submit(() -> {
-            latch.countDown();
-        });
+        this.eventLoopGroup.submit(latch::countDown);
 
         try {
             latch.await();
@@ -64,15 +62,9 @@ public class EventLoop implements RefCounted {
             this.eventLoopGroup = null;
         }
 
-        this.userTaskExecutor = Executors.newSingleThreadScheduledExecutor((Runnable r) -> {
-            Thread t = new Thread(r, "user-tasks");
-            return t;
-        });
+        this.userTaskExecutor = Executors.newSingleThreadScheduledExecutor((Runnable r) -> new Thread(r, "user-tasks"));
 
-        this.blockingTaskExecutor = Executors.newCachedThreadPool((Runnable r) -> {
-            Thread t = new Thread(r, "blocking-task");
-            return t;
-        });
+        this.blockingTaskExecutor = Executors.newCachedThreadPool((Runnable r) -> new Thread(r, "blocking-task"));
     }
 
     public void setProcess(NodeProcess process) {

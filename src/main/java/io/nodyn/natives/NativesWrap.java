@@ -54,7 +54,7 @@ public class NativesWrap {
         InputStreamReader reader = new InputStreamReader(in);
 
         char[] buf = new char[4096];
-        int numRead = 0;
+        int numRead;
 
         while ((numRead = reader.read(buf)) >= 0) {
             source.append(buf, 0, numRead);

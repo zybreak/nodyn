@@ -57,30 +57,24 @@ public class DuplexIPCChannel extends EmbeddedChannel {
 
     protected void startPumps() {
 
-        this.inPump = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    doReadLoop();
-                } catch (Throwable t) {
-                    DuplexIPCChannel.this.process.getNodyn().handleThrowable(t);
-                }
-            }
-        });
+        this.inPump = new Thread(() -> {
+			try {
+				doReadLoop();
+			} catch (Throwable t) {
+				DuplexIPCChannel.this.process.getNodyn().handleThrowable(t);
+			}
+		});
 
         this.inPump.setDaemon(true);
         this.inPump.start();
 
-        this.outPump = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    doWriteLoop();
-                } catch (Throwable t) {
-                    DuplexIPCChannel.this.process.getNodyn().handleThrowable(t);
-                }
-            }
-        });
+        this.outPump = new Thread(() -> {
+			try {
+				doWriteLoop();
+			} catch (Throwable t) {
+				DuplexIPCChannel.this.process.getNodyn().handleThrowable(t);
+			}
+		});
 
         this.outPump.setDaemon(true);
         this.outPump.start();
@@ -93,8 +87,8 @@ public class DuplexIPCChannel extends EmbeddedChannel {
         nioBuf.put( (byte) 0 );
         nioBuf.flip();
         message.setIov(new ByteBuffer[]{ nioBuf });
-        int result = posix.sendmsg( this.fd, message, 0 );
-        result = posix.fsync(this.fd);
+        posix.sendmsg(this.fd, message, 0);
+        posix.fsync(this.fd);
 
 
         this.closed = true;
@@ -151,7 +145,7 @@ public class DuplexIPCChannel extends EmbeddedChannel {
     protected void doWriteLoop() {
         try {
             while (true) {
-                Object outbound = null;
+                Object outbound;
                 synchronized (outboundNotifier) {
                     while (outboundMessages().isEmpty()) {
                         outboundNotifier.wait();
@@ -168,7 +162,7 @@ public class DuplexIPCChannel extends EmbeddedChannel {
 
     protected void doWriteOutbound(Object outbound) {
         int fd = -1;
-        ByteBuf buf = null;
+        ByteBuf buf;
 
         if (outbound instanceof IPCRecord) {
             buf = ((IPCRecord) outbound).getBuffer();
@@ -197,7 +191,7 @@ public class DuplexIPCChannel extends EmbeddedChannel {
             control.setLevel(SocketLevel.SOL_SOCKET.intValue());
         }
 
-        int result = posix.sendmsg(this.fd, message, 0);
+        posix.sendmsg(this.fd, message, 0);
     }
 
     @Override

@@ -17,7 +17,6 @@ import static java.nio.file.StandardWatchEventKinds.*;
 public class FsEventWrap extends HandleWrap {
 
     private final EventLoop eventLoop;
-    private boolean persistent;
 
     public FsEventWrap(NodeProcess process) {
         super(process, false);
@@ -26,7 +25,6 @@ public class FsEventWrap extends HandleWrap {
 
     public void start(String path, boolean persistent, boolean recursive) {
         File dir = new File(path);
-        this.persistent = persistent;
         if (!dir.isDirectory()) {
             watched = dir;
             dir = watched.getParentFile();
@@ -38,27 +36,23 @@ public class FsEventWrap extends HandleWrap {
             Path toWatch = Paths.get(dir.getCanonicalPath());
             watcher = toWatch.getFileSystem().newWatchService();
             toWatch.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-            this.eventLoop.submitBlockingTask(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        WatchKey key = watcher.take();
-                        while (key != null && key.isValid()) {
-                            for (final WatchEvent event : key.pollEvents()) {
-                                if (watched == null || watched.getName().equals(event.context().toString())) {
-                                    emit("change", CallbackResult.createSuccess(event.kind().toString(), event.context().toString()));
-                                }
-                            }
-                            key.reset();
-                            key = watcher.take();
-                        }
-                    } catch (Exception e) {
-                        // If a thread is currently blocked in the take or poll methods waiting for
-                        // a key to be queued then it immediately receives a ClosedWatchServiceException.
-                        // Any valid keys associated with this watch service are invalidated.
-                    }
-                }
-            });
+            this.eventLoop.submitBlockingTask(() -> {
+				try {
+					WatchKey key = watcher.take();
+					while (key != null && key.isValid()) {
+                        key.pollEvents()
+							.stream()
+							.filter(event -> watched == null || watched.getName().equals(event.context().toString()))
+							.forEach(event -> emit("change", CallbackResult.createSuccess(event.kind().toString(), event.context().toString())));
+						key.reset();
+						key = watcher.take();
+					}
+				} catch (Exception e) {
+					// If a thread is currently blocked in the take or poll methods waiting for
+					// a key to be queued then it immediately receives a ClosedWatchServiceException.
+					// Any valid keys associated with this watch service are invalidated.
+				}
+			});
         } catch (IOException e) {
             this.getProcess().getNodyn().handleThrowable(e);
         }

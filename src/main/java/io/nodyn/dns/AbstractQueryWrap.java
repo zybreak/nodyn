@@ -20,7 +20,6 @@ import io.nodyn.CallbackResult;
 import io.nodyn.EventSource;
 import io.nodyn.NodeProcess;
 import org.vertx.java.core.AsyncResult;
-import org.vertx.java.core.AsyncResultHandler;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.dns.DnsClient;
 
@@ -69,30 +68,24 @@ public abstract class AbstractQueryWrap extends EventSource {
     }
 
     protected <T> Handler<AsyncResult<List<T>>> listHandler() {
-        return new AsyncResultHandler<List<T>>() {
-            @Override
-            public void handle(AsyncResult<List<T>> event) {
-                if (event.failed()) {
-                    emit("complete", CallbackResult.createError(event.cause()));
-                } else {
-                    emit("complete", CallbackResult.createSuccess(event.result()));
-                }
-            }
-        };
+        return event -> {
+			if (event.failed()) {
+				emit("complete", CallbackResult.createError(event.cause()));
+			} else {
+				emit("complete", CallbackResult.createSuccess(event.result()));
+			}
+		};
     }
 
     protected <T> Handler<AsyncResult<T>> handler() {
-        return new AsyncResultHandler<T>() {
-            @Override
-            public void handle(AsyncResult<T> event) {
-                if (event.failed()) {
-                    emit("complete", CallbackResult.createError(event.cause()));
-                } else {
-                    final T result = event.result();
-                    final CallbackResult success = CallbackResult.createSuccess(result);
-                    emit("complete", success);
-                }
-            }
-        };
+        return event -> {
+			if (event.failed()) {
+				emit("complete", CallbackResult.createError(event.cause()));
+			} else {
+				final T result = event.result();
+				final CallbackResult success = CallbackResult.createSuccess(result);
+				emit("complete", success);
+			}
+		};
     }
 }

@@ -28,7 +28,7 @@ public class Cipher {
     }
 
     private void initialize(boolean encipher, ByteBuffer key, ByteBuffer iv) throws InvalidKeyException {
-        CipherParameters params = null;
+        CipherParameters params;
         byte[] keyBytes = Buffer.extractByteArray(key);
         params = new KeyParameter(keyBytes);
 

@@ -57,52 +57,47 @@ public class NioDuplexStreamChannel extends AbstractNioStreamChannel {
     }
 
     protected void startPumps() {
-        this.process.getEventLoop().submitBlockingTask( new Runnable() {
-            @Override
-            public void run() {
-                byte[] buf = new byte[1024];
-                int numRead = 0;
-                try {
-                    while ((numRead = NioDuplexStreamChannel.this.in.read(buf)) >= 0) {
-                        if ( numRead > 0 ) {
-                            NioDuplexStreamChannel.this.inPipe.sink().write(ByteBuffer.wrap(buf, 0, numRead));
-                        }
-                    }
-                    NioDuplexStreamChannel.this.inPipe.sink().close();
-                } catch (IOException e) {
-                    NioDuplexStreamChannel.this.process.getNodyn().handleThrowable(e);
-                    try {
-                        NioDuplexStreamChannel.this.inPipe.sink().close();
-                    } catch (IOException e1) {
-                        NioDuplexStreamChannel.this.process.getNodyn().handleThrowable(e);
-                    }
-                }
-            }
-        } );
+        this.process.getEventLoop().submitBlockingTask(() -> {
+			byte[] buf = new byte[1024];
+			int numRead = 0;
+			try {
+				while ((numRead = NioDuplexStreamChannel.this.in.read(buf)) >= 0) {
+					if ( numRead > 0 ) {
+						NioDuplexStreamChannel.this.inPipe.sink().write(ByteBuffer.wrap(buf, 0, numRead));
+					}
+				}
+				NioDuplexStreamChannel.this.inPipe.sink().close();
+			} catch (IOException e) {
+				NioDuplexStreamChannel.this.process.getNodyn().handleThrowable(e);
+				try {
+					NioDuplexStreamChannel.this.inPipe.sink().close();
+				} catch (IOException e1) {
+					NioDuplexStreamChannel.this.process.getNodyn().handleThrowable(e);
+				}
+			}
+		});
 
-        this.process.getEventLoop().submitBlockingTask( new Runnable() {
-            public void run() {
-                ByteBuffer buf = ByteBuffer.allocate(1024);
-                int numRead = 0;
-                try {
-                    while ((numRead = NioDuplexStreamChannel.this.outPipe.source().read(buf)) >= 0) {
-                        if (numRead > 0) {
-                            byte[] writeMe = buf.array();
-                            NioDuplexStreamChannel.this.out.write(writeMe, 0, numRead);
-                            NioDuplexStreamChannel.this.out.flush();
-                            buf.clear();
-                        }
-                    }
-                } catch (IOException e) {
-                    NioDuplexStreamChannel.this.process.getNodyn().handleThrowable(e);
-                    try {
-                        NioDuplexStreamChannel.this.outPipe.source().close();
-                    } catch (IOException e1) {
-                        NioDuplexStreamChannel.this.process.getNodyn().handleThrowable(e);
-                    }
-                }
-            }
-        } );
+        this.process.getEventLoop().submitBlockingTask(() -> {
+			ByteBuffer buf = ByteBuffer.allocate(1024);
+			int numRead = 0;
+			try {
+				while ((numRead = NioDuplexStreamChannel.this.outPipe.source().read(buf)) >= 0) {
+					if (numRead > 0) {
+						byte[] writeMe = buf.array();
+						NioDuplexStreamChannel.this.out.write(writeMe, 0, numRead);
+						NioDuplexStreamChannel.this.out.flush();
+						buf.clear();
+					}
+				}
+			} catch (IOException e) {
+				NioDuplexStreamChannel.this.process.getNodyn().handleThrowable(e);
+				try {
+					NioDuplexStreamChannel.this.outPipe.source().close();
+				} catch (IOException e1) {
+					NioDuplexStreamChannel.this.process.getNodyn().handleThrowable(e);
+				}
+			}
+		});
     }
 
     @Override
@@ -118,8 +113,7 @@ public class NioDuplexStreamChannel extends AbstractNioStreamChannel {
     @Override
     protected int doWriteBytes(ByteBuf buf) throws Exception {
         final int expectedWrittenBytes = buf.readableBytes();
-        final int writtenBytes = buf.readBytes(this.outPipe.sink(), expectedWrittenBytes);
-        return writtenBytes;
+        return buf.readBytes(this.outPipe.sink(), expectedWrittenBytes);
     }
 
     @Override

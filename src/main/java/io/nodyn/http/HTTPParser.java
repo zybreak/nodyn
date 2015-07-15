@@ -59,7 +59,7 @@ public class HTTPParser extends EventSource {
             "PURGE",
     };
 
-    public static enum Error {
+    public enum Error {
         INVALID_EOF_STATE("stream ended at an unexpected time"),
         HEADER_OVERFLOW("too many header bytes seen; overflow detected"),
         CLOSED_CONNECTION("data received after completed connection: close message"),
@@ -93,7 +93,7 @@ public class HTTPParser extends EventSource {
     private static final Charset UTF8 = Charset.forName("utf8");
     private static final Charset ASCII = Charset.forName("us-ascii");
 
-    private static enum State {
+    private enum State {
         REQUEST,
         RESPONSE,
         HEADERS,
@@ -211,11 +211,11 @@ public class HTTPParser extends EventSource {
     }
 
     public String[] getHeaders() {
-        return (String[]) this.headers.toArray(new String[this.headers.size()]);
+        return this.headers.toArray(new String[this.headers.size()]);
     }
 
     public String[] getTrailers() {
-        return (String[]) this.trailers.toArray(new String[this.headers.size()]);
+        return this.trailers.toArray(new String[this.headers.size()]);
     }
 
     public boolean getShouldKeepAlive() {
@@ -242,18 +242,14 @@ public class HTTPParser extends EventSource {
             return false;
         }
 
-        if (((int) (this.statusCode / 100) == 1) ||
+        if ((this.statusCode / 100 == 1) ||
                 this.statusCode == 204 ||
                 this.statusCode == 304 ||
                 this.skipBody) {
             return false;
         }
 
-        if ( this.chunked || this.length != Integer.MAX_VALUE ) {
-            return false;
-        }
-
-        return true;
+        return !(this.chunked || this.length != Integer.MAX_VALUE);
 
     }
 
@@ -285,7 +281,7 @@ public class HTTPParser extends EventSource {
                     if (headerResult == 0) {
                         Object result = emit("headersComplete", CallbackResult.EMPTY_SUCCESS);
                         this.state = State.BODY;
-                        if (result instanceof Boolean && ((Boolean) result).booleanValue()) {
+                        if (result instanceof Boolean && (Boolean) result) {
                             this.skipBody = true;
                         }
                         if ( this.skipBody ) {
@@ -395,8 +391,7 @@ public class HTTPParser extends EventSource {
 
         int len = (cr + 2) - readerIndex();
 
-        ByteBuf line = buf.readSlice(len);
-        return line;
+        return buf.readSlice(len);
     }
 
     protected boolean readRequestLine() {
@@ -437,7 +432,7 @@ public class HTTPParser extends EventSource {
 
         space = line.indexOf(line.readerIndex(), line.readerIndex() + line.readableBytes(), (byte) ' ');
 
-        ByteBuf urlBuf = null;
+        ByteBuf urlBuf;
         ByteBuf versionBuf = null;
         if (space < 0) {
             // HTTP/1.0
@@ -499,7 +494,7 @@ public class HTTPParser extends EventSource {
 
         ByteBuf statusBuf = line.readSlice(len);
 
-        int status = -1;
+        int status;
 
         try {
             status = Integer.parseInt(statusBuf.toString(UTF8));
@@ -576,14 +571,14 @@ public class HTTPParser extends EventSource {
 
         if (colonLoc < 0) {
             // maybe it's a continued header
-            if ( line.readableBytes() > 1 ) {
+            if (line.readableBytes() > 1) {
                 char c = (char) line.getByte(0);
-                if ( c == ' ' || c == '\t' ) {
+                if (c == ' ' || c == '\t') {
                     // it IS a continued header value
                     int lastIndex = this.headers.size() - 1;
-                    String val = this.headers.get( lastIndex );
-                    val = val + " " + line.toString( ASCII ).trim();
-                    this.headers.set( lastIndex, val );
+                    String val = this.headers.get(lastIndex);
+                    val = val + " " + line.toString(ASCII).trim();
+                    this.headers.set(lastIndex, val);
                     return true;
                 }
             }
@@ -604,11 +599,8 @@ public class HTTPParser extends EventSource {
         target.add(key);
         target.add(value);
 
-        if (analyze) {
-            return analyzeHeader(key.toLowerCase(), value);
-        }
+        return !analyze || analyzeHeader(key.toLowerCase(), value);
 
-        return true;
     }
 
     protected boolean analyzeHeader(String name, String value) {
@@ -641,8 +633,7 @@ public class HTTPParser extends EventSource {
         }
 
         try {
-            int len = Integer.parseInt(line.toString(UTF8).trim(), 16);
-            this.length = len;
+            this.length = Integer.parseInt(line.toString(UTF8).trim(), 16);
         } catch (NumberFormatException e) {
             setError(Error.INVALID_CHUNK_SIZE);
             return false;
@@ -668,7 +659,7 @@ public class HTTPParser extends EventSource {
     }
 
     protected ByteBuf readBody() {
-        ByteBuf data = null;
+        ByteBuf data;
         if (this.buf.readableBytes() <= this.length) {
             data = this.buf.readSlice(this.buf.readableBytes());
             this.length -= data.readableBytes();
