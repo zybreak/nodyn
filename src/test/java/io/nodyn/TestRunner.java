@@ -39,7 +39,7 @@ public class TestRunner {
     public static void main(String... args) throws InterruptedException {
         System.setProperty( "nodyn.binary", "./bin/node" );
 
-        RuntimeFactory factory = RuntimeFactory.init(TestRunner.class.getClassLoader(), RuntimeFactory.RuntimeType.NASHORN);
+        RuntimeFactory factory = RuntimeFactory.init(TestRunner.class.getClassLoader());
         NodynConfig config = new NodynConfig( new String[] { "-e", SCRIPT } );
         Nodyn nodyn = factory.newRuntime(config);
         nodyn.setExitHandler( new NoOpExitHandler() );

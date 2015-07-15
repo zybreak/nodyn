@@ -72,8 +72,6 @@
     <version.hazelcast>2.6.6</version.hazelcast>
 -->
 
-    <version.dynjs>0.3.2-SNAPSHOT</version.dynjs>
-
     <version.apacheds>1.5.7</version.apacheds>
     <version.commons.lang>3.1</version.commons.lang>
     <version.bouncycastle>1.50</version.bouncycastle>
@@ -166,11 +164,6 @@
       <version>${version.apacheds}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.dynjs</groupId>
-      <artifactId>dynjs</artifactId>
-      <version>${version.dynjs}</version>
-    </dependency>
   </dependencies>
 
   <profiles>
@@ -206,7 +199,6 @@
                   <cleanupDaemonThreads>false</cleanupDaemonThreads>
                   <daemonThreadJoinTimeout>1000</daemonThreadJoinTimeout>
                   <systemPropertyVariables>
-                    <dynjs.compile.mode>OFF</dynjs.compile.mode>
                     <nodyn.binary>./bin/nodyn</nodyn.binary>
                     <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
                   </systemPropertyVariables>
@@ -241,9 +233,6 @@
             <version>${maven.surefire.plugin.version}</version>
             <configuration>
               <jvm>/opt/jdk/jdk1.7.0/bin/java</jvm>
-              <systemPropertyVariables>
-                <dynjs.compile.mode>OFF</dynjs.compile.mode>
-              </systemPropertyVariables>
             </configuration>
           </plugin>
         </plugins>

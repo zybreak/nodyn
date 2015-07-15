@@ -16,7 +16,6 @@
 package io.nodyn.runtime;
 
 import io.nodyn.Nodyn;
-import io.nodyn.runtime.dynjs.DynJSFactory;
 import io.nodyn.runtime.nashorn.NashornFactory;
 import org.vertx.java.core.Vertx;
 
@@ -34,19 +33,13 @@ public abstract class RuntimeFactory {
     }
 
     /**
-     * Initializes a new RuntimeFactory.  At some point, this will provide either a DynJS or a Nashorn
-     * runtime depending on env vars, system properties or defaults
+     * Initializes a new RuntimeFactory.
      *
      * @param parent a parent classloader
      * @return a factory for creating nodyn configuration and runtime instances
      */
-    public static RuntimeFactory init(ClassLoader parent, RuntimeType runtimeType) {
-        if (runtimeType == RuntimeType.DYNJS) {
-            return new DynJSFactory(parent);
-        } else if (runtimeType == RuntimeType.NASHORN) {
-            return new NashornFactory(parent);
-        }
-        throw new RuntimeException("Not implemented: " + runtimeType);
+    public static RuntimeFactory init(ClassLoader parent) {
+		return new NashornFactory(parent);
     }
 
     public ClassLoader getParent() {
@@ -67,8 +60,4 @@ public abstract class RuntimeFactory {
      * @return the new Nodyn runtime
      */
     abstract public Nodyn newRuntime(NodynConfig config, Vertx vertx);
-
-    public enum RuntimeType {
-      DYNJS, NASHORN
-    }
 }

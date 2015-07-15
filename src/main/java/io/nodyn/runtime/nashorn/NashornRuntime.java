@@ -140,9 +140,6 @@ public class NashornRuntime extends Nodyn {
             engine.eval("global = this;");
             engine.eval("load(\"nashorn:mozilla_compat.js\");");
 
-            // Adds ES6 capabilities not provided by DynJS to global scope
-            compileNative(ES6_POLYFILL).execute(global);
-
             // Invoke the process function
             JSObject processFunction = (JSObject) compileNative(PROCESS).execute(global);
             JSObject jsProcess = (JSObject) processFunction.call(processFunction, javaProcess);
@@ -174,25 +171,5 @@ public class NashornRuntime extends Nodyn {
     private Program compileNative(String fileName) throws ScriptException  {
         final InputStreamReader is = new InputStreamReader(getConfiguration().getClassLoader().getResourceAsStream(fileName));
         return new NashornProgram(engine.compile(is), fileName);
-    }
-
-    class NodynJSObject extends AbstractJSObject {
-
-        HashMap<String, Object> store = new HashMap<>();
-
-        @Override
-        public void setMember(String name, Object value) {
-            store.put(name, value);
-        }
-
-        @Override
-        public boolean hasMember(String name) {
-            return store.containsKey(name);
-        }
-
-        @Override
-        public Object getMember(String name) {
-            return store.get(name);
-        }
     }
 }

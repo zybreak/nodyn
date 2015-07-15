@@ -82,7 +82,7 @@ public class Main {
     }
 
     protected int runNormal() {
-        RuntimeFactory factory = RuntimeFactory.init(this.config.getClassLoader(), RuntimeFactory.RuntimeType.NASHORN);
+        RuntimeFactory factory = RuntimeFactory.init(this.config.getClassLoader());
         this.nodyn = factory.newRuntime(config);
         try {
             return this.nodyn.run();

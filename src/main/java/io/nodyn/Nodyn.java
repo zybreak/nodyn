@@ -69,7 +69,6 @@ public abstract class Nodyn {
 
     protected static final String NODE_JS = "node.js";
     protected static final String PROCESS = "nodyn/process.js";
-    protected static final String ES6_POLYFILL = "nodyn/polyfill.js";
 
     abstract public Object loadBinding(String name);
 
