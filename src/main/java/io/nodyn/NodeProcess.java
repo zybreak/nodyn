@@ -21,9 +21,9 @@ import io.nodyn.fs.UnsafeFs;
 import io.nodyn.loop.EventLoop;
 import io.nodyn.loop.ImmediateCheckHandle;
 import io.nodyn.posix.NodePosixHandler;
+import io.vertx.core.Vertx;
 import jnr.posix.POSIX;
 import jnr.posix.POSIXFactory;
-import org.vertx.java.core.Vertx;
 
 import java.io.File;
 import java.io.IOException;

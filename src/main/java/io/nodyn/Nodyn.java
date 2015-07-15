@@ -21,8 +21,8 @@ import io.nodyn.crypto.CryptoInitializer;
 import io.nodyn.loop.EventLoop;
 import io.nodyn.runtime.NodynConfig;
 import io.nodyn.runtime.Program;
-import org.vertx.java.core.Vertx;
-import org.vertx.java.core.impl.VertxInternal;
+import io.vertx.core.Vertx;
+import io.vertx.core.impl.VertxInternal;
 
 import java.io.BufferedReader;
 import java.io.IOException;

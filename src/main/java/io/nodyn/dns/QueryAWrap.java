@@ -30,6 +30,6 @@ public class QueryAWrap extends AbstractQueryWrap {
     }
 
     public void start() {
-        dnsClient().resolveA(this.name, this.<Inet4Address>listHandler());
+        dnsClient().resolveA(this.name, this.listHandler());
     }
 }

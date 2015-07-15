@@ -19,23 +19,18 @@ import io.nodyn.NodeProcess;
 import io.nodyn.Nodyn;
 import io.nodyn.runtime.NodynConfig;
 import io.nodyn.runtime.Program;
+import io.vertx.core.Vertx;
+import io.vertx.core.impl.VertxFactoryImpl;
+import io.vertx.core.spi.VertxFactory;
+import jdk.nashorn.api.scripting.JSObject;
+import jdk.nashorn.api.scripting.NashornScriptEngine;
+
+import javax.script.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.script.Bindings;
-import org.vertx.java.core.Vertx;
-
-import javax.script.ScriptContext;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.script.SimpleScriptContext;
-import jdk.nashorn.api.scripting.AbstractJSObject;
-import jdk.nashorn.api.scripting.JSObject;
-import jdk.nashorn.api.scripting.NashornScriptEngine;
-import org.vertx.java.core.VertxFactory;
 
 /**
  * @author Lance Ball
@@ -48,7 +43,7 @@ public class NashornRuntime extends Nodyn {
     private static final String NATIVE_REQUIRE = "nodyn/_native_require.js";
 
     public NashornRuntime(NodynConfig config) {
-        this(config, VertxFactory.newVertx(), true);
+        this(config, Vertx.vertx(), true);
     }
 
 

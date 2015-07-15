@@ -55,7 +55,7 @@ public class GetAddrInfo4Wrap extends AbstractQueryWrap {
 				}
 			});
         } else {
-            dnsClient().lookup4(this.name, this.<Inet4Address>handler());
+            dnsClient().lookup4(this.name, this.handler());
         }
     }
 

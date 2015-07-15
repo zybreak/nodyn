@@ -18,7 +18,7 @@ package io.nodyn.runtime.nashorn;
 import io.nodyn.Nodyn;
 import io.nodyn.runtime.NodynConfig;
 import io.nodyn.runtime.RuntimeFactory;
-import org.vertx.java.core.Vertx;
+import io.vertx.core.Vertx;
 
 /**
  * @author Lance Ball

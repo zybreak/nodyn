@@ -17,7 +17,7 @@
 package io.nodyn.dns;
 
 import io.nodyn.NodeProcess;
-import org.vertx.java.core.dns.SrvRecord;
+import io.vertx.core.dns.SrvRecord;
 
 /**
  * @author Bob McWhirter

@@ -17,7 +17,7 @@ package io.nodyn.runtime;
 
 import io.nodyn.Nodyn;
 import io.nodyn.runtime.nashorn.NashornFactory;
-import org.vertx.java.core.Vertx;
+import io.vertx.core.Vertx;
 
 /**
  * A factory used to obtain a Nodyn instance.

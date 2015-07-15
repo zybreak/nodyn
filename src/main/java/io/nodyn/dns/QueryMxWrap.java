@@ -17,7 +17,7 @@
 package io.nodyn.dns;
 
 import io.nodyn.NodeProcess;
-import org.vertx.java.core.dns.MxRecord;
+import io.vertx.core.dns.MxRecord;
 
 /**
  * @author Bob McWhirter

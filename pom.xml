@@ -67,7 +67,7 @@
 
     <!-- dependency versions -->
     <version.junit>4.11</version.junit>
-    <version.vertx>2.1.1</version.vertx>
+    <version.vertx>3.0.0</version.vertx>
 <!--
     <version.hazelcast>2.6.6</version.hazelcast>
 -->

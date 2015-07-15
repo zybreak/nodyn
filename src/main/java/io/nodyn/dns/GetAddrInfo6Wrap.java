@@ -56,7 +56,7 @@ public class GetAddrInfo6Wrap extends AbstractQueryWrap {
 				}
 			});
         } else {
-            dnsClient().lookup6(this.name, this.<Inet6Address>handler());
+            dnsClient().lookup6(this.name, this.handler());
         }
     }
 }

@@ -30,6 +30,6 @@ public class GetHostByAddrWrap extends AbstractQueryWrap {
     }
 
     public void start() {
-        dnsClient().reverseLookup( this.name, this.<InetAddress>handler());
+        dnsClient().reverseLookup( this.name, this.handler());
     }
 }

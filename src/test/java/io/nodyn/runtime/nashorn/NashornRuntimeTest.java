@@ -18,23 +18,21 @@ package io.nodyn.runtime.nashorn;
 import io.nodyn.NodeProcess;
 import io.nodyn.runtime.NodynConfig;
 import io.nodyn.runtime.Program;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.vertx.java.core.Vertx;
-import org.vertx.java.core.VertxFactory;
+import io.vertx.core.Vertx;
+import org.junit.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  *
  * @author lanceball
  */
 public class NashornRuntimeTest {
-    Vertx vertx;
-    NodynConfig config;
-    NashornRuntime runtime;
+    private Vertx vertx;
+    private NodynConfig config;
+    private NashornRuntime runtime;
 
     public NashornRuntimeTest() {
     }
@@ -49,14 +47,14 @@ public class NashornRuntimeTest {
     
     @Before
     public void setUp() {
-        vertx = VertxFactory.newVertx();
+        vertx = Vertx.vertx();
         config = new NodynConfig();
         runtime = new NashornRuntime(config, vertx, false);
     }
     
     @After
     public void tearDown() {
-        vertx.stop();
+        vertx.close();
     }
 
     /**
@@ -101,12 +99,12 @@ public class NashornRuntimeTest {
     /**
      * Test of makeContext method, of class NashornRuntime.
      */
+	@Ignore
     @Test
     public void testMakeContext() {
         System.out.println("makeContext");
         Object global = null;
-        NashornRuntime instance = new NashornRuntime(config, vertx, false);
-//        instance.makeContext(global);
+        runtime.makeContext(global);
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
     }
@@ -114,13 +112,11 @@ public class NashornRuntimeTest {
     /**
      * Test of isContext method, of class NashornRuntime.
      */
+	@Ignore
     @Test
     public void testIsContext() {
         System.out.println("isContext");
-        Object global = null;
-        NashornRuntime instance = new NashornRuntime(config, vertx, false);
-        boolean expResult = false;
-//        boolean result = instance.isContext(global);
+        //boolean result = runtime.isContext(global);
 //        assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
@@ -133,8 +129,7 @@ public class NashornRuntimeTest {
     public void testHandleThrowable() {
         System.out.println("handleThrowable");
         Throwable t = new Exception("A test exception - this should appear in build output.");
-        NashornRuntime instance = new NashornRuntime(config, vertx, false);
-        instance.handleThrowable(t);
+        runtime.handleThrowable(t);
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
     }
@@ -145,9 +140,8 @@ public class NashornRuntimeTest {
     @Test
     public void testInitialize() {
         System.out.println("initialize");
-        NashornRuntime instance = new NashornRuntime(config, vertx, false);
         NodeProcess expResult = null;
-        NodeProcess result = instance.initialize();
+        NodeProcess result = runtime.initialize();
 //        assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
@@ -157,13 +151,13 @@ public class NashornRuntimeTest {
      * Test of runScript method, of class NashornRuntime.
      */
     @Test
+	@Ignore
     public void testRunScript() {
         System.out.println("runScript");
         String script = "";
-        NashornRuntime instance = new NashornRuntime(config, vertx, false);
         Object expResult = null;
-//        Object result = instance.runScript(script);
-//        assertEquals(expResult, result);
+        Object result = runtime.runScript(script);
+        assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
     }
@@ -174,12 +168,8 @@ public class NashornRuntimeTest {
     @Test
     public void testGetGlobalContext() {
         System.out.println("getGlobalContext");
-        NashornRuntime instance = new NashornRuntime(config, vertx, false);
-        Object expResult = null;
-        Object result = instance.getGlobalContext();
-//        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+        Object result = runtime.getGlobalContext();
+        assertNotNull(result);
     }
     
 }

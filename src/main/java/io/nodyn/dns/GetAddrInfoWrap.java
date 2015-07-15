@@ -52,7 +52,7 @@ public class GetAddrInfoWrap extends AbstractQueryWrap {
                 }
             });
         } else {
-            dnsClient().lookup(this.name, this.<InetAddress>handler());
+            dnsClient().lookup(this.name, this.handler());
         }
     }
 

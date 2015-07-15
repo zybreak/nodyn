@@ -19,9 +19,9 @@ package io.nodyn.dns;
 import io.nodyn.CallbackResult;
 import io.nodyn.EventSource;
 import io.nodyn.NodeProcess;
-import org.vertx.java.core.AsyncResult;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.dns.DnsClient;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.dns.DnsClient;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -53,7 +53,7 @@ public abstract class AbstractQueryWrap extends EventSource {
     public abstract void start();
 
     protected DnsClient dnsClient() {
-        return this.process.getVertx().createDnsClient(getServerAddresses());
+        return this.process.getVertx().createDnsClient(53, getServerAddresses()[0].getHostName());
     }
 
     protected InetSocketAddress[] getServerAddresses() {
