@@ -51,190 +51,160 @@ public final class TestDnsServer extends DnsServer {
     }
 
     public static TestDnsServer testResolveA(final String ipAddress) {
-        return new TestDnsServer(new RecordStore() {
-            @Override
-            public Set<ResourceRecord> getRecords(QuestionRecord questionRecord) throws org.apache.directory.server.dns.DnsException {
-                Set<ResourceRecord> set = new HashSet<>();
+        return new TestDnsServer(questionRecord -> {
+			Set<ResourceRecord> set = new HashSet<>();
 
-                ResourceRecordModifier rm = new ResourceRecordModifier();
-                rm.setDnsClass(RecordClass.IN);
-                rm.setDnsName("dns.nodyn.io");
-                rm.setDnsTtl(100);
-                rm.setDnsType(RecordType.A);
-                rm.put(DnsAttribute.IP_ADDRESS, ipAddress);
-                set.add(rm.getEntry());
-                return set;
-            }
-        });
+			ResourceRecordModifier rm = new ResourceRecordModifier();
+			rm.setDnsClass(RecordClass.IN);
+			rm.setDnsName("dns.nodyn.io");
+			rm.setDnsTtl(100);
+			rm.setDnsType(RecordType.A);
+			rm.put(DnsAttribute.IP_ADDRESS, ipAddress);
+			set.add(rm.getEntry());
+			return set;
+		});
     }
 
     public static TestDnsServer testResolveAAAA(final String ipAddress) {
-        return new TestDnsServer(new RecordStore() {
-            @Override
-            public Set<ResourceRecord> getRecords(QuestionRecord questionRecord) throws org.apache.directory.server.dns.DnsException {
-                Set<ResourceRecord> set = new HashSet<>();
+        return new TestDnsServer(questionRecord -> {
+			Set<ResourceRecord> set = new HashSet<>();
 
-                ResourceRecordModifier rm = new ResourceRecordModifier();
-                rm.setDnsClass(RecordClass.IN);
-                rm.setDnsName("dns.nodyn.io");
-                rm.setDnsTtl(100);
-                rm.setDnsType(RecordType.AAAA);
-                rm.put(DnsAttribute.IP_ADDRESS, ipAddress);
+			ResourceRecordModifier rm = new ResourceRecordModifier();
+			rm.setDnsClass(RecordClass.IN);
+			rm.setDnsName("dns.nodyn.io");
+			rm.setDnsTtl(100);
+			rm.setDnsType(RecordType.AAAA);
+			rm.put(DnsAttribute.IP_ADDRESS, ipAddress);
 
-                set.add(rm.getEntry());
-                return set;
-            }
-        });
+			set.add(rm.getEntry());
+			return set;
+		});
     }
 
     public static TestDnsServer testResolveMX(final int prio, final String mxRecord) {
-        return new TestDnsServer(new RecordStore() {
-            @Override
-            public Set<ResourceRecord> getRecords(QuestionRecord questionRecord) throws org.apache.directory.server.dns.DnsException {
-                Set<ResourceRecord> set = new HashSet<>();
+        return new TestDnsServer(questionRecord -> {
+			Set<ResourceRecord> set = new HashSet<>();
 
-                ResourceRecordModifier rm = new ResourceRecordModifier();
-                rm.setDnsClass(RecordClass.IN);
-                rm.setDnsName("dns.nodyn.io");
-                rm.setDnsTtl(100);
-                rm.setDnsType(RecordType.MX);
-                rm.put(DnsAttribute.MX_PREFERENCE, String.valueOf(prio));
-                rm.put(DnsAttribute.DOMAIN_NAME, mxRecord);
-                set.add(rm.getEntry());
-                return set;
-            }
-        });
+			ResourceRecordModifier rm = new ResourceRecordModifier();
+			rm.setDnsClass(RecordClass.IN);
+			rm.setDnsName("dns.nodyn.io");
+			rm.setDnsTtl(100);
+			rm.setDnsType(RecordType.MX);
+			rm.put(DnsAttribute.MX_PREFERENCE, String.valueOf(prio));
+			rm.put(DnsAttribute.DOMAIN_NAME, mxRecord);
+			set.add(rm.getEntry());
+			return set;
+		});
     }
 
     public static TestDnsServer testResolveTXT(final String txt) {
-        return new TestDnsServer(new RecordStore() {
-            @Override
-            public Set<ResourceRecord> getRecords(QuestionRecord questionRecord) throws org.apache.directory.server.dns.DnsException {
-                Set<ResourceRecord> set = new HashSet<>();
+        return new TestDnsServer(questionRecord -> {
+			Set<ResourceRecord> set = new HashSet<>();
 
-                ResourceRecordModifier rm = new ResourceRecordModifier();
-                rm.setDnsClass(RecordClass.IN);
-                rm.setDnsName("dns.nodyn.io");
-                rm.setDnsTtl(100);
-                rm.setDnsType(RecordType.TXT);
-                rm.put(DnsAttribute.CHARACTER_STRING, txt);
-                set.add(rm.getEntry());
-                return set;
-            }
-        });
+			ResourceRecordModifier rm = new ResourceRecordModifier();
+			rm.setDnsClass(RecordClass.IN);
+			rm.setDnsName("dns.nodyn.io");
+			rm.setDnsTtl(100);
+			rm.setDnsType(RecordType.TXT);
+			rm.put(DnsAttribute.CHARACTER_STRING, txt);
+			set.add(rm.getEntry());
+			return set;
+		});
     }
 
     public static TestDnsServer testResolveNS(final String ns) {
-        return new TestDnsServer(new RecordStore() {
-            @Override
-            public Set<ResourceRecord> getRecords(QuestionRecord questionRecord) throws org.apache.directory.server.dns.DnsException {
-                Set<ResourceRecord> set = new HashSet<>();
+        return new TestDnsServer(questionRecord -> {
+			Set<ResourceRecord> set = new HashSet<>();
 
-                ResourceRecordModifier rm = new ResourceRecordModifier();
-                rm.setDnsClass(RecordClass.IN);
-                rm.setDnsName("dns.nodyn.io");
-                rm.setDnsTtl(100);
-                rm.setDnsType(RecordType.NS);
-                rm.put(DnsAttribute.DOMAIN_NAME, ns);
-                set.add(rm.getEntry());
-                return set;
-            }
-        });
+			ResourceRecordModifier rm = new ResourceRecordModifier();
+			rm.setDnsClass(RecordClass.IN);
+			rm.setDnsName("dns.nodyn.io");
+			rm.setDnsTtl(100);
+			rm.setDnsType(RecordType.NS);
+			rm.put(DnsAttribute.DOMAIN_NAME, ns);
+			set.add(rm.getEntry());
+			return set;
+		});
     }
 
     public static TestDnsServer testResolveCNAME(final String cname) {
-        return new TestDnsServer(new RecordStore() {
-            @Override
-            public Set<ResourceRecord> getRecords(QuestionRecord questionRecord) throws org.apache.directory.server.dns.DnsException {
-                Set<ResourceRecord> set = new HashSet<>();
+        return new TestDnsServer(questionRecord -> {
+			Set<ResourceRecord> set = new HashSet<>();
 
-                ResourceRecordModifier rm = new ResourceRecordModifier();
-                rm.setDnsClass(RecordClass.IN);
-                rm.setDnsName("dns.nodyn.io");
-                rm.setDnsTtl(100);
-                rm.setDnsType(RecordType.CNAME);
-                rm.put(DnsAttribute.DOMAIN_NAME, cname);
-                set.add(rm.getEntry());
-                return set;
-            }
-        });
+			ResourceRecordModifier rm = new ResourceRecordModifier();
+			rm.setDnsClass(RecordClass.IN);
+			rm.setDnsName("dns.nodyn.io");
+			rm.setDnsTtl(100);
+			rm.setDnsType(RecordType.CNAME);
+			rm.put(DnsAttribute.DOMAIN_NAME, cname);
+			set.add(rm.getEntry());
+			return set;
+		});
     }
 
     public static TestDnsServer testResolvePTR(final String ptr) {
-        return new TestDnsServer(new RecordStore() {
-            @Override
-            public Set<ResourceRecord> getRecords(QuestionRecord questionRecord) throws org.apache.directory.server.dns.DnsException {
-                Set<ResourceRecord> set = new HashSet<>();
+        return new TestDnsServer(questionRecord -> {
+			Set<ResourceRecord> set = new HashSet<>();
 
-                ResourceRecordModifier rm = new ResourceRecordModifier();
-                rm.setDnsClass(RecordClass.IN);
-                rm.setDnsName("dns.nodyn.io");
-                rm.setDnsTtl(100);
-                rm.setDnsType(RecordType.PTR);
-                rm.put(DnsAttribute.DOMAIN_NAME, ptr);
-                set.add(rm.getEntry());
-                return set;
-            }
-        });
+			ResourceRecordModifier rm = new ResourceRecordModifier();
+			rm.setDnsClass(RecordClass.IN);
+			rm.setDnsName("dns.nodyn.io");
+			rm.setDnsTtl(100);
+			rm.setDnsType(RecordType.PTR);
+			rm.put(DnsAttribute.DOMAIN_NAME, ptr);
+			set.add(rm.getEntry());
+			return set;
+		});
     }
 
     public static TestDnsServer testResolveSRV(final int priority, final int weight, final int port, final String target) {
-        return new TestDnsServer(new RecordStore() {
-            @Override
-            public Set<ResourceRecord> getRecords(QuestionRecord questionRecord) throws org.apache.directory.server.dns.DnsException {
-                Set<ResourceRecord> set = new HashSet<>();
+        return new TestDnsServer(questionRecord -> {
+			Set<ResourceRecord> set = new HashSet<>();
 
-                ResourceRecordModifier rm = new ResourceRecordModifier();
-                rm.setDnsClass(RecordClass.IN);
-                rm.setDnsName("dns.nodyn.io");
-                rm.setDnsTtl(100);
-                rm.setDnsType(RecordType.SRV);
-                rm.put(DnsAttribute.SERVICE_PRIORITY, String.valueOf(priority));
-                rm.put(DnsAttribute.SERVICE_WEIGHT, String.valueOf(weight));
-                rm.put(DnsAttribute.SERVICE_PORT, String.valueOf(port));
-                rm.put(DnsAttribute.DOMAIN_NAME, target);
-                set.add(rm.getEntry());
-                return set;
-            }
-        });
+			ResourceRecordModifier rm = new ResourceRecordModifier();
+			rm.setDnsClass(RecordClass.IN);
+			rm.setDnsName("dns.nodyn.io");
+			rm.setDnsTtl(100);
+			rm.setDnsType(RecordType.SRV);
+			rm.put(DnsAttribute.SERVICE_PRIORITY, String.valueOf(priority));
+			rm.put(DnsAttribute.SERVICE_WEIGHT, String.valueOf(weight));
+			rm.put(DnsAttribute.SERVICE_PORT, String.valueOf(port));
+			rm.put(DnsAttribute.DOMAIN_NAME, target);
+			set.add(rm.getEntry());
+			return set;
+		});
     }
 
     public static TestDnsServer testLookup4(final String ip) {
-        return new TestDnsServer(new RecordStore() {
-            @Override
-            public Set<ResourceRecord> getRecords(QuestionRecord questionRecord) throws org.apache.directory.server.dns.DnsException {
-                Set<ResourceRecord> set = new HashSet<>();
+        return new TestDnsServer(questionRecord -> {
+			Set<ResourceRecord> set = new HashSet<>();
 
-                ResourceRecordModifier rm = new ResourceRecordModifier();
-                rm.setDnsClass(RecordClass.IN);
-                rm.setDnsName("dns.nodyn.io");
-                rm.setDnsTtl(100);
-                rm.setDnsType(RecordType.A);
-                rm.put(DnsAttribute.IP_ADDRESS, ip);
+			ResourceRecordModifier rm = new ResourceRecordModifier();
+			rm.setDnsClass(RecordClass.IN);
+			rm.setDnsName("dns.nodyn.io");
+			rm.setDnsTtl(100);
+			rm.setDnsType(RecordType.A);
+			rm.put(DnsAttribute.IP_ADDRESS, ip);
 
-                set.add(rm.getEntry());
-                return set;
-            }
-        });
+			set.add(rm.getEntry());
+			return set;
+		});
     }
 
     public static TestDnsServer testLookup6() {
-        return new TestDnsServer(new RecordStore() {
-            @Override
-            public Set<ResourceRecord> getRecords(QuestionRecord questionRecord) throws org.apache.directory.server.dns.DnsException {
-                Set<ResourceRecord> set = new HashSet<>();
+        return new TestDnsServer(questionRecord -> {
+			Set<ResourceRecord> set = new HashSet<>();
 
-                ResourceRecordModifier rm = new ResourceRecordModifier();
-                rm.setDnsClass(RecordClass.IN);
-                rm.setDnsName("dns.nodyn.io");
-                rm.setDnsTtl(100);
-                rm.setDnsType(RecordType.AAAA);
-                rm.put(DnsAttribute.IP_ADDRESS, "::1");
+			ResourceRecordModifier rm = new ResourceRecordModifier();
+			rm.setDnsClass(RecordClass.IN);
+			rm.setDnsName("dns.nodyn.io");
+			rm.setDnsTtl(100);
+			rm.setDnsType(RecordType.AAAA);
+			rm.put(DnsAttribute.IP_ADDRESS, "::1");
 
-                set.add(rm.getEntry());
-                return set;
-            }
-        });
+			set.add(rm.getEntry());
+			return set;
+		});
     }
 
     public static TestDnsServer testLookup(final String ip) {
@@ -242,30 +212,22 @@ public final class TestDnsServer extends DnsServer {
     }
 
     public static TestDnsServer testLookupNonExisting() {
-        return new TestDnsServer(new RecordStore() {
-            @Override
-            public Set<ResourceRecord> getRecords(QuestionRecord questionRecord) throws org.apache.directory.server.dns.DnsException {
-                return null;
-            }
-        });
+        return new TestDnsServer(questionRecord -> null);
     }
 
     public static TestDnsServer testReverseLookup(final String ptr) {
-        return new TestDnsServer(new RecordStore() {
-            @Override
-            public Set<ResourceRecord> getRecords(QuestionRecord questionRecord) throws org.apache.directory.server.dns.DnsException {
-                Set<ResourceRecord> set = new HashSet<>();
+        return new TestDnsServer(questionRecord -> {
+			Set<ResourceRecord> set = new HashSet<>();
 
-                ResourceRecordModifier rm = new ResourceRecordModifier();
-                rm.setDnsClass(RecordClass.IN);
-                rm.setDnsName("dns.nodyn.io");
-                rm.setDnsTtl(100);
-                rm.setDnsType(RecordType.PTR);
-                rm.put(DnsAttribute.DOMAIN_NAME, ptr);
-                set.add(rm.getEntry());
-                return set;
-            }
-        });
+			ResourceRecordModifier rm = new ResourceRecordModifier();
+			rm.setDnsClass(RecordClass.IN);
+			rm.setDnsName("dns.nodyn.io");
+			rm.setDnsTtl(100);
+			rm.setDnsType(RecordType.PTR);
+			rm.put(DnsAttribute.DOMAIN_NAME, ptr);
+			set.add(rm.getEntry());
+			return set;
+		});
     }
 
     @Override

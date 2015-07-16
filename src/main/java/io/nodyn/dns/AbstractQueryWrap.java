@@ -53,18 +53,11 @@ public abstract class AbstractQueryWrap extends EventSource {
     public abstract void start();
 
     protected DnsClient dnsClient() {
-        return this.process.getVertx().createDnsClient(53, getServerAddresses()[0].getHostName());
+        return this.process.getVertx().createDnsClient(port(), getServerAddresses()[0]);
     }
 
-    protected InetSocketAddress[] getServerAddresses() {
-        String[] serverNames = ResolverConfig.getCurrentConfig().servers();
-        InetSocketAddress[] servers = new InetSocketAddress[serverNames.length];
-
-        for (int i = 0; i < serverNames.length; ++i) {
-            servers[i] = new InetSocketAddress(serverNames[i], port());
-        }
-
-        return servers;
+    protected String[] getServerAddresses() {
+        return ResolverConfig.getCurrentConfig().servers();
     }
 
     protected <T> Handler<AsyncResult<List<T>>> listHandler() {
