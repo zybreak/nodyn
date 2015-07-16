@@ -40,12 +40,13 @@ public class NashornRuntime extends Nodyn {
     private final NashornScriptEngine engine;
     private final ScriptContext global;
 
+    private static final Logger LOGGER = Logger.getLogger(NashornRuntime.class.getName());
+
     private static final String NATIVE_REQUIRE = "nodyn/_native_require.js";
 
     public NashornRuntime(NodynConfig config) {
         this(config, Vertx.vertx(), true);
     }
-
 
     public NashornRuntime(NodynConfig config, Vertx vertx, boolean controlLifeCycle) {
         super(config, vertx, controlLifeCycle);
@@ -57,7 +58,7 @@ public class NashornRuntime extends Nodyn {
             Program nativeRequire = compileNative(NATIVE_REQUIRE);
             nativeRequire.execute(global);
         } catch (ScriptException ex) {
-            Logger.getLogger(NashornRuntime.class.getName()).log(Level.SEVERE, "Failed to load " + NATIVE_REQUIRE, ex);
+            LOGGER.log(Level.SEVERE, "Failed to load " + NATIVE_REQUIRE, ex);
             System.exit(255);
         }
     }
@@ -79,7 +80,7 @@ public class NashornRuntime extends Nodyn {
         try {
             return new NashornProgram(engine.compile(source), fileName);
         } catch (ScriptException ex) {
-            Logger.getLogger(NashornRuntime.class.getName()).log(Level.SEVERE, "Cannot compile script " + fileName, ex);
+            LOGGER.log(Level.SEVERE, "Cannot compile script " + fileName, ex);
             handleThrowable(ex);
         }
         return null;
@@ -143,7 +144,7 @@ public class NashornRuntime extends Nodyn {
             JSObject nodeFunction = (JSObject) compileNative(NODE_JS).execute(global);
             nodeFunction.call(nodeFunction, jsProcess);
         } catch (ScriptException ex) {
-            Logger.getLogger(NashornRuntime.class.getName()).log(Level.SEVERE, "Cannot initialize", ex);
+            LOGGER.log(Level.SEVERE, "Cannot initialize", ex);
         }
         return javaProcess;
     }
@@ -153,7 +154,7 @@ public class NashornRuntime extends Nodyn {
         try {
             return engine.eval(new FileReader(script));
         } catch (ScriptException | FileNotFoundException ex) {
-            Logger.getLogger(NashornRuntime.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return null;
     }
