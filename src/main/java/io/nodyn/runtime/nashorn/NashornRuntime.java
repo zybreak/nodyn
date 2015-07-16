@@ -24,6 +24,7 @@ import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 
 import javax.script.*;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStreamReader;
@@ -150,7 +151,7 @@ public class NashornRuntime extends Nodyn {
     @Override
     protected Object runScript(String script) {
         try {
-            return engine.eval(new FileReader(script));
+			engine.compile(new FileReader(script)).eval();
         } catch (ScriptException | FileNotFoundException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
