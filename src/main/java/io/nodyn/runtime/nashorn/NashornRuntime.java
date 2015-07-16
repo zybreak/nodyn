@@ -20,8 +20,6 @@ import io.nodyn.Nodyn;
 import io.nodyn.runtime.NodynConfig;
 import io.nodyn.runtime.Program;
 import io.vertx.core.Vertx;
-import io.vertx.core.impl.VertxFactoryImpl;
-import io.vertx.core.spi.VertxFactory;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 
