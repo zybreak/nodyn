@@ -34,7 +34,7 @@ cares.isIP = function(host) {
 // ----------------------------------------------------------------------
 
 function translateError(err) {
-  if ( err instanceof Java.type("org.vertx.java.core.dns.DnsException") ) {
+  if ( err instanceof Java.type("io.vertx.core.dns.DnsException") ) {
     var c = err.code().code();
     if ( c == 3 ) {
       return process.binding('uv').UV_EAI_NODATA;
