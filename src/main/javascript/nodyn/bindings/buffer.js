@@ -151,12 +151,6 @@ module.exports.setupBufferJS = function(target, internal) {
     return module.exports.extractByteArray(this);
   };
 
-  // TODO: remove this
-  target.prototype._vertxBuffer = function() {
-    return new org.vertx.java.core.buffer.Buffer( this._rawBuffer() );
-  };
-
-
   // ----------------------------------------
 
   target.prototype.copy = function(target, targetStart, sourceStart, sourceEnd) {
